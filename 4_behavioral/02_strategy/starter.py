@@ -83,9 +83,16 @@ class TaskProcessor(ABC):
 #   - Oznacz zadanie jako completed (task.mark_completed())
 #   - Zwróć dict z kluczami: "status" (str), "processing_time" (float), "strategy_used" (str = "urgent"), "validation_passed" (bool)
 
-class UrgentTaskProcessor:
-    pass
-
+class UrgentTaskProcessor(TaskProcessor):
+    def process_task(self, task: WorkflowTask) -> Dict[str, Any]:
+        """Przetworz zadanie i zwróć wynik"""
+        start_time = time.time()
+        validation_passed = (task.priority == TaskPriority.URGENT and task.description)
+        task.mark_completed()
+        return {"status": "completed",
+                "processing_time": time.time() - start_time,
+                "strategy_used": "urgent",
+                "validation_passed": validation_passed}
 
 # TODO: Zaimplementuj klasę StandardTaskProcessor
 # Dziedziczy po TaskProcessor
@@ -96,8 +103,17 @@ class UrgentTaskProcessor:
 #   - Oznacz zadanie jako completed (task.mark_completed())
 #   - Zwróć dict z kluczami: "status" (str), "processing_time" (float), "strategy_used" (str = "standard"), "validation_passed" (bool)
 
-class StandardTaskProcessor:
-    pass
+class StandardTaskProcessor(TaskProcessor):
+    def process_task(self, task: WorkflowTask) -> Dict[str, Any]:
+        """Przetworz zadanie i zwróć wynik"""
+        start_time = time.time()
+        validation_passed = len(task.title) >= 3
+        time.sleep(1)  # Symulacja przetwarzania
+        task.mark_completed()
+        return {"status": "completed",
+                "processing_time": time.time() - start_time,
+                "strategy_used": "standard",
+                "validation_passed": validation_passed}
 
 
 # TODO: Zaimplementuj klasę BackgroundTaskProcessor
@@ -109,8 +125,17 @@ class StandardTaskProcessor:
 #   - Oznacz zadanie jako completed (task.mark_completed())
 #   - Zwróć dict z kluczami: "status" (str), "processing_time" (float), "strategy_used" (str = "background"), "validation_passed" (bool)
 
-class BackgroundTaskProcessor:
-    pass
+class BackgroundTaskProcessor(TaskProcessor):
+    def process_task(self, task: WorkflowTask) -> Dict[str, Any]:
+        """Przetworz zadanie i zwróć wynik"""
+        start_time = time.time()
+        validation_passed = task.priority != TaskPriority.URGENT
+        time.sleep(0.1)  # Symulacja wolnego przetwarzania
+        task.mark_completed()
+        return {"status": "completed",
+                "processing_time": time.time() - start_time,
+                "strategy_used": "background",
+                "validation_passed": validation_passed}
 
 
 # %% Context - DO IMPLEMENTACJI
@@ -129,4 +154,15 @@ class BackgroundTaskProcessor:
 #   - Zwraca wynik z process_task()
 
 class TaskManager:
-    pass
+    def __init__(self, strategy: TaskProcessor = None):
+        self.strategy = strategy
+
+    def set_strategy(self, strategy: TaskProcessor) -> None:
+        self.strategy = strategy
+    
+    def execute_task(self, task: WorkflowTask) -> Dict[str, Any]:
+        
+        if self.strategy is None:
+            raise ValueError("No strategy set")
+        
+        return self.strategy.process_task(task)
