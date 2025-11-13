@@ -87,7 +87,7 @@ class UrgentTaskProcessor(TaskProcessor):
     def process_task(self, task: WorkflowTask) -> Dict[str, Any]:
         """Przetworz zadanie i zwróć wynik"""
         start_time = time.time()
-        validation_passed = (task.priority == TaskPriority.URGENT and task.description)
+        validation_passed = (task.priority == TaskPriority.URGENT and task.description is not None)
         task.mark_completed()
         return {"status": "completed",
                 "processing_time": time.time() - start_time,
