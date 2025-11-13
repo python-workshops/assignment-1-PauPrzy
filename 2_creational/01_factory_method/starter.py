@@ -101,8 +101,20 @@ class Bow(Weapon):
 #   - Wywołuje self.create_weapon() aby stworzyć broń
 #   - Zwraca: "{name} attacks with {weapon_name} for {damage} damage!"
 
-class Character:
-    pass
+class Character(ABC):
+    def __init__(self, name: str):
+        self.name = name
+
+    @abstractmethod
+    def create_weapon(self) -> Weapon:
+        pass
+
+    def attack(self) -> str:
+        weapon = self.create_weapon()
+        weapon_name = weapon.get_name()
+        damage = weapon.get_damage()
+        return f"{self.name} attacks with {weapon_name} for {damage} damage!"
+
 
 
 # %% STEP 4: Concrete Creators (Warrior, Mage, Archer)
@@ -111,24 +123,27 @@ class Character:
 # Dziedziczy po Character
 # Nadpisz create_weapon() - zwraca Sword()
 
-class Warrior:
-    pass
+class Warrior(Character):
+    def create_weapon(self):
+        return Sword()
 
 
 # TODO: Zaimplementuj klasę Mage
 # Dziedziczy po Character
 # Nadpisz create_weapon() - zwraca Staff()
 
-class Mage:
-    pass
+class Mage(Character):
+    def create_weapon(self):
+        return Staff()
 
 
 # TODO: Zaimplementuj klasę Archer
 # Dziedziczy po Character
 # Nadpisz create_weapon() - zwraca Bow()
 
-class Archer:
-    pass
+class Archer(Character):
+    def create_weapon(self):
+        return Bow()
 
 
 # %% Run
@@ -137,9 +152,9 @@ class Archer:
 
 # %% Example
 # Odkomentuj gdy zaimplementujesz:
-# if __name__ == "__main__":
-#     warrior = Warrior("Conan")
-#     print(warrior.attack())
-#
-#     mage = Mage("Gandalf")
-#     print(mage.attack())
+if __name__ == "__main__":
+    warrior = Warrior("Conan")
+    print(warrior.attack())
+
+    mage = Mage("Gandalf")
+    print(mage.attack())
