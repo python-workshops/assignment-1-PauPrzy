@@ -71,6 +71,13 @@ class ConfigManager:
     Zarządza ustawieniami gry w sposób centralny.
     TODO: Zaimplementuj jako Singleton - jedna instancja dla całej aplikacji.
     """
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
+
 
     # TODO: WZORZEC SINGLETON - DO IMPLEMENTACJI
     #
